@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<resources>
+    <style name="Theme.ProcessManager" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:statusBarColor">@color/pm_background</item>
+        <item name="android:navigationBarColor">@color/pm_surface</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowBackground">@color/pm_background</item>
+    </style>
+</resources>

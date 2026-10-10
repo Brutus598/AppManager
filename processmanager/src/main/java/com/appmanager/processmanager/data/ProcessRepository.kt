@@ -45,12 +45,10 @@ class ProcessRepository(private val context: Context) {
 
     suspend fun scan(): List<ProcessInfo> = withContext(Dispatchers.IO) {
         val nowUptimeMs = SystemClock.elapsedRealtime()
-        val jiffyHz = runCatching {
-            val fr = File("/proc/self/stat").readText().split(' ')
-            // We'll detect clock ticks using uptime vs starttime differences
-            // (a 100Hz default is correct for virtually all Android kernels).
-            100L
-        }.getOrDefault(100L)
+        // 100 Hz is the CONFIG_HZ used by virtually all Android kernels; on
+        // rooted devices one could read /proc/self/auxv (AT_CLKTCK) for accuracy.
+        val jiffyHz = 100L
+        val msPerTick = 1000L / jiffyHz
 
         // Gather candidate PIDs from ActivityManager first, then /proc.
         val amProcs: List<ActivityManager.RunningAppProcessInfo> =
@@ -88,10 +86,10 @@ class ProcessRepository(private val context: Context) {
 
             val memBytes = estimateMemory(rap.pid)
             val stat = ProcReader.readStat(rap.pid)
-            val cpuPercent = computeCpuPercent(rap.pid, stat, nowUptimeMs, jiffyHz)
+            val cpuPercent = computeCpuPercent(rap.pid, stat, nowUptimeMs, msPerTick)
             val startTime = stat?.starttime?.let { startTicks ->
                 System.currentTimeMillis() -
-                    (nowUptimeMs - startTicks * 1000 / jiffyHz)
+                    (nowUptimeMs - startTicks * msPerTick)
             } ?: System.currentTimeMillis()
 
             out += ProcessInfo(
@@ -121,9 +119,9 @@ class ProcessRepository(private val context: Context) {
             val isKernel = stat.ppid == 2 || stat.state == 'S' && stat.comm.startsWith("k")
             val label = appInfo?.loadLabel(pm)?.toString() ?: stat.comm
             val memBytes = ProcReader.readRssBytes(pid)
-            val cpuPercent = computeCpuPercent(pid, stat, nowUptimeMs, jiffyHz)
+            val cpuPercent = computeCpuPercent(pid, stat, nowUptimeMs, msPerTick)
             val startTime = System.currentTimeMillis() -
-                (nowUptimeMs - stat.starttime * 1000 / jiffyHz)
+                (nowUptimeMs - stat.starttime * msPerTick)
 
             // Skip kernel threads on non-rooted devices because we can't do
             // anything useful with them and they add noise.
@@ -221,7 +219,7 @@ class ProcessRepository(private val context: Context) {
         pid: Int,
         stat: ProcReader.ProcStat?,
         nowUptimeMs: Long,
-        jiffyHz: Long,
+        msPerTick: Long,
     ): Float {
         if (stat == null) return 0f
         val total = stat.utime + stat.stime
@@ -229,7 +227,8 @@ class ProcessRepository(private val context: Context) {
             prevCpuTicks[pid] = total
             return 0f
         }
-        val dtTicks = (nowUptimeMs - prevUptimeMs).coerceAtLeast(1) * jiffyHz / 1000
+        val dtMs = (nowUptimeMs - prevUptimeMs).coerceAtLeast(1)
+        val dtTicks = dtMs / msPerTick.coerceAtLeast(1)
         if (dtTicks <= 0) return 0f
         val delta = (total - prev).coerceAtLeast(0)
         return (delta * 100f / dtTicks).coerceIn(0f, 100f)

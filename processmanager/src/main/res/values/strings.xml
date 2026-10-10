@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SPDX-License-Identifier: GPL-3.0-or-later -->
+<resources>
+    <string name="app_name">Process Manager</string>
+    <string name="scan">Scannen</string>
+    <string name="kill_selected">Ausgewählte beenden</string>
+    <string name="kill_all">Alle beenden</string>
+    <string name="search_processes">Prozesse suchen…</string>
+    <string name="no_processes">Keine Prozesse gefunden</string>
+    <string name="scanning">Prozesse werden gescannt…</string>
+    <string name="process_killed">Prozess beendet</string>
+    <string name="processes_killed">%1$d Prozesse beendet</string>
+    <string name="kill_failed">Beenden fehlgeschlagen</string>
+    <string name="cpu_usage">CPU</string>
+    <string name="memory_usage">Arbeitsspeicher</string>
+    <string name="runtime">Laufzeit</string>
+    <string name="pid">PID</string>
+    <string name="uid">UID</string>
+    <string name="threads">Threads</string>
+    <string name="type_app">App</string>
+    <string name="type_system">System</string>
+    <string name="type_background">Hintergrund</string>
+    <string name="type_service">Dienst</string>
+    <string name="permission_title">Berechtigung erforderlich</string>
+    <string name="permission_message">Um alle laufenden Prozesse anzuzeigen, erlaube bitte die Nutzungsstatistik-Zugriffsberechtigung in den Systemeinstellungen.</string>
+    <string name="open_settings">Einstellungen öffnen</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="confirm_kill_title">Prozesse beenden</string>
+    <string name="confirm_kill_message">Möchtest du %1$d ausgewählte Prozesse wirklich beenden?</string>
+    <string name="confirm_kill_all_message">Möchtest du wirklich alle %1$d laufenden Prozesse beenden? Systemprozesse werden automatisch ausgelassen.</string>
+    <string name="confirm">Beenden</string>
+    <string name="selected_count">%1$d ausgewählt</string>
+    <string name="process_count">%1$d Prozesse</string>
+    <string name="memory_mb">%1$.1f MB</string>
+    <string name="percent">%1$.1f%%</string>
+    <string name="system_proc">System</string>
+</resources>
